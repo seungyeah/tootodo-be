@@ -26,11 +26,6 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
       PGADMIN_LISTEN_PORT: ${PGADMIN_LISTEN_PORT}
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-      MONGO_TEST_DATABASE: ${MONGO_TEST_DATABASE}
-      MONGODB_URL: ${MONGODB_URL}
       MONGODB_TEST_URL: ${MONGODB_TEST_URL}
       MONGODB_CONTAINER_URL: ${MONGODB_CONTAINER_URL}
     depends_on:
@@ -74,27 +69,9 @@ services:
     networks:
       - tootodo_network
 
-  mongo:
-      image: mongo:latest
-      container_name: mongo
-      environment:
-        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-        MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-        MONGO_TEST_DATABASE: ${MONGO_TEST_DATABASE}
-        MONGODB_URL: ${MONGODB_URL}
-        MONGODB_TEST_URL: ${MONGODB_TEST_URL}
-        MONGODB_CONTAINER_URL: ${MONGODB_CONTAINER_URL}
-      volumes:
-        - mongo:/var/lib/mongodb/data
-      restart: always
-      networks:
-      - tootodo_network
-
 volumes:
   postgres:
   pgadmin-data:
-  mongo:
 
 networks:
   tootodo_network:
