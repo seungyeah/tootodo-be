@@ -22,6 +22,8 @@ use config::Config;
 use dotenv::dotenv;
 use infra::db::{MongoDB, DB};
 use sqlx::{Pool, Postgres};
+use std::env;
+use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 use tower_http::{classify::ServerErrorsFailureClass, cors::CorsLayer, trace::TraceLayer};
@@ -45,12 +47,15 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() > 1 && args[1] == "dev" {
-        dotenv::from_filename(".env.dev").ok();
+    // 빌드 프로파일에 따라 환경 선택
+    let env_file = if cfg!(debug_assertions) {
+        ".env.dev" // 디버그 빌드 시
     } else {
-        dotenv().ok();
-    }
+        ".env" // 릴리스 빌드 시
+    };
+
+    // 선택된 환경 변수 파일 로드
+    dotenv::from_path(Path::new(env_file)).expect("Failed to load environment file");
 
     tracing_subscriber::fmt()
         .with_max_level(tracing::level_filters::LevelFilter::DEBUG)
