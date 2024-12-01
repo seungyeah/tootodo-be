@@ -1,5 +1,5 @@
 # Builder Stage
-FROM rust:slim-bookworm AS builder
+FROM --platform=linux/arm64 rust:slim-bookworm AS builder
 ENV SQLX_OFFLINE=true
 WORKDIR /app
 
@@ -31,7 +31,7 @@ RUN cargo build --release --target aarch64-unknown-linux-gnu --locked
 
 
 # Production Stage
-FROM debian:bookworm-slim AS runner
+FROM --platform=linux/arm64 debian:bookworm-slim AS runner
 ARG APP=/usr/src/app
 ENV TZ=Etc/UTC APP_USER=appuser
 
