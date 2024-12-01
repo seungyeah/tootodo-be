@@ -81,7 +81,7 @@ jobs:
       - name: Publish artifacts
         uses: houseabsolute/actions-rust-release@v0
         with:
-          executable-name: ubi
+          executable-name: tootodo-be
           target: ${{ matrix.platform.target }}
 
   docker-build:
