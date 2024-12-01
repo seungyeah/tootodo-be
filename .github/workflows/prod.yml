@@ -130,6 +130,7 @@ jobs:
       - name: Copy Configuration Files
         run: |
           scp -o StrictHostKeyChecking=no Caddyfile ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
+          scp -o StrictHostKeyChecking=no Dockerfile ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
           scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
           scp -o StrictHostKeyChecking=no docker-compose.prod.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
 
