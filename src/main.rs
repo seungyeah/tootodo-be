@@ -19,10 +19,8 @@ use axum::{
 };
 use bytes::Bytes;
 use config::Config;
-use dotenv::dotenv;
 use infra::db::{MongoDB, DB};
 use sqlx::{Pool, Postgres};
-use std::env;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
