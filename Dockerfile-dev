@@ -1,0 +1,29 @@
+# Base image for Rust development
+FROM rust:slim AS builder
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    libssl-dev pkg-config build-essential \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy only Cargo manifest files to cache dependencies
+COPY ./Cargo.toml ./Cargo.lock ./
+
+# Pre-download and install dependencies without building
+RUN mkdir src/ \
+    && echo "fn main() {}" > src/main.rs \
+    && cargo fetch \
+    && rm -rf src/main.rs
+
+# Copy the source code into the container (if needed for further use)
+COPY . .
+
+# Install cargo-watch for hot-reloading
+RUN cargo install cargo-watch
+
+# Expose application port
+EXPOSE 8000
