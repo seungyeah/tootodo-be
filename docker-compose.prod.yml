@@ -1,8 +1,7 @@
-version: '3'
-
 services:
   caddy:
-    image: caddy/caddy:2.7.6-alpine
+    image: caddy:latest
+    platform: linux/arm64/v8
     container_name: caddy
     restart: unless-stopped
     ports:
