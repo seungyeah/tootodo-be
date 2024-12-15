@@ -11,7 +11,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         tzdata \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* 
 
 # 실행 사용자 및 디렉토리 설정
 RUN groupadd $APP_USER \
@@ -19,10 +19,8 @@ RUN groupadd $APP_USER \
     && mkdir -p ${APP}
 
 # 바이너리 복사 (외부에서 제공된 아티팩트 사용)
-COPY ./tootodo-be ${APP}/tootodo-be
+COPY --chown=$APP_USER:$APP_USER tootodo-be $APP/tootodo-be
 
-# 파일 소유권 변경
-RUN chown -R $APP_USER:$APP_USER ${APP}
 
 # 실행 사용자 및 작업 디렉토리 설정
 USER $APP_USER
