@@ -55,6 +55,9 @@ jobs:
           toolchain: stable
           target: ${{ matrix.platform.target }}
 
+      - name: Add aarch64 target
+        run: rustup target add aarch64-unknown-linux-gnu
+        
       - name: Install SQLx CLI
         run: cargo install sqlx-cli --no-default-features --features postgres
 
