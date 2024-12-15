@@ -34,9 +34,6 @@ services:
       MONGODB_CONTAINER_URL: ${MONGODB_CONTAINER_URL}
     depends_on:
       - postgres
-    build:
-      context: .
-      dockerfile: Dockerfile
     networks:
       - tootodo_network
       
