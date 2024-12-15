@@ -1,56 +1,33 @@
-# Builder Stage
-FROM --platform=linux/arm64 rust:slim-bookworm AS builder
-ENV SQLX_OFFLINE=true
-WORKDIR /app
-
-# Install dependencies and cross-compilers
-RUN apt-get update \
-    && apt-get install -y \
-        gcc-aarch64-linux-gnu \
-        libc6-dev-arm64-cross \
-        pkg-config \
-        curl \
-    && rustup target add aarch64-unknown-linux-gnu 
-
-ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
-
-
-# Only copy over the Cargo manifest files
-COPY ./Cargo.toml ./Cargo.lock ./
-
-# This trick will cache the dependencies as a separate layer
-RUN mkdir src/ \
-    && echo "fn main() {}" > src/main.rs \
-    && cargo build --release --target aarch64-unknown-linux-gnu\
-    && rm -f target/aarch64-unknown-linux-gnu/release/deps/tootodo_be*
-
-
-# Copy source files and build the application
-COPY . .
-RUN cargo build --release --target aarch64-unknown-linux-gnu --locked
-
-
-# Production Stage
+# Base Image
 FROM --platform=linux/arm64 debian:bookworm-slim AS runner
-ARG APP=/usr/src/app
-ENV TZ=Etc/UTC APP_USER=appuser
 
-# Install only the runtime dependencies
+# 환경 변수 설정
+ARG APP=/usr/src/app
+ENV TZ=Etc/UTC \
+    APP_USER=appuser
+
+# 런타임 의존성 설치
 RUN apt-get update \
-    && apt-get install -y ca-certificates tzdata \
-    && rm -rf /var/lib/apt/lists/* \
-    && groupadd $APP_USER \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# 실행 사용자 및 디렉토리 설정
+RUN groupadd $APP_USER \
     && useradd -g $APP_USER $APP_USER \
     && mkdir -p ${APP}
 
-# Copy the built binary from the builder stage
-COPY --from=builder /app/target/aarch64-unknown-linux-gnu/release/tootodo-be ${APP}/tootodo-be
+# 바이너리 복사 (외부에서 제공된 아티팩트 사용)
+COPY ./tootodo-be ${APP}/tootodo-be
 
-# Ensure the user owns the application files
+# 파일 소유권 변경
 RUN chown -R $APP_USER:$APP_USER ${APP}
 
+# 실행 사용자 및 작업 디렉토리 설정
 USER $APP_USER
 WORKDIR ${APP}
 
+# 기본 실행 명령어 및 포트 설정
 ENTRYPOINT ["./tootodo-be"]
 EXPOSE 8000

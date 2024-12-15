@@ -16,7 +16,7 @@ jobs:
       matrix:
           target: [aarch64-unknown-linux-gnu]
 
-    runs-on: [self-hosted, linux, arm64, rpi]
+    runs-on: debian:bookworm-slim
     services:
       postgres:
         image: arm64v8/postgres:15.6-alpine3.19
@@ -81,6 +81,8 @@ jobs:
         with:
           executable-name: tootodo-be
           target: ${{ matrix.platform.target }}
+          args: "--locked --release"
+          strip: true
 
   docker-build:
     needs: build
@@ -88,6 +90,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Download binary artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: tootodo-be
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -98,6 +105,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Copy Binary for Docker Build
+        run: mkdir -p ./artifact && mv ./tootodo-be ./artifact/
+
       - name: Build and Push Docker Images
         uses: docker/bake-action@v4.2.0
         with:
@@ -105,6 +115,8 @@ jobs:
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
+          args: |
+            --build-arg APP_BINARY=artifact/tootodo-be
 
   deploy:
     needs: docker-build
@@ -128,7 +140,6 @@ jobs:
       - name: Copy Configuration Files
         run: |
           scp -o StrictHostKeyChecking=no Caddyfile ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
-          scp -o StrictHostKeyChecking=no Dockerfile ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
           scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
           scp -o StrictHostKeyChecking=no docker-compose.prod.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
 
