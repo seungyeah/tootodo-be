@@ -57,7 +57,7 @@ jobs:
 
       - name: Add aarch64 target
         run: rustup target add aarch64-unknown-linux-gnu
-        
+
       - name: Install SQLx CLI
         run: cargo install sqlx-cli --no-default-features --features postgres
 
@@ -123,7 +123,7 @@ jobs:
 
   deploy:
     needs: docker-build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, arm64, rpi]  # RPi에서 실행
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -133,51 +133,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-
-      - name: Copy Configuration Files
+            
+      - name: Pull Docker Images
         run: |
-          scp -o StrictHostKeyChecking=no Caddyfile ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
-          scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
-          scp -o StrictHostKeyChecking=no docker-compose.prod.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~
-
-      - name: Deploy to Server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} "
-            export $(echo '
-              DATABASE_URL=${{ secrets.DATABASE_CONTAINER_URL }}
-              CLIENT_ORIGIN=${{ secrets.CLIENT_ORIGIN }}
-              DOMAIN=${{ secrets.DOMAIN }}
-              ACCESS_TOKEN_PRIVATE_KEY=${{ secrets.ACCESS_TOKEN_PRIVATE_KEY }}
-              ACCESS_TOKEN_EXPIRED_IN=${{ secrets.ACCESS_TOKEN_EXPIRED_IN }}
-              REFRESH_TOKEN_EXPIRED_IN=${{ secrets.REFRESH_TOKEN_EXPIRED_IN }}
-              REFRESH_TOKEN_MAXAGE=${{ secrets.REFRESH_TOKEN_MAXAGE }}
-              DATABASE_CONTAINER_URL=${{ secrets.DATABASE_CONTAINER_URL }}
-              ACCESS_TOKEN_MAXAGE=${{ secrets.ACCESS_TOKEN_MAXAGE }}
-              REFRESH_TOKEN_PUBLIC_KEY=${{ secrets.REFRESH_TOKEN_PUBLIC_KEY }}
-              ACCESS_TOKEN_PUBLIC_KEY=${{ secrets.ACCESS_TOKEN_PUBLIC_KEY }}
-              REFRESH_TOKEN_PRIVATE_KEY=${{ secrets.REFRESH_TOKEN_PRIVATE_KEY }}
-              GOOGLE_OAUTH_CLIENT_ID=${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
-              GOOGLE_OAUTH_REDIRECT_URL=${{ secrets.GOOGLE_OAUTH_REDIRECT_URL }}
-              GOOGLE_OAUTH_CLIENT_SECRET=${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
-              POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-              POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-              POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-              PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
-              PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-              PGADMIN_LISTEN_PORT=${{ secrets.PGADMIN_LISTEN_PORT }}
-              MONGODB_TEST_URL=${{ secrets.MONGODB_TEST_URL }}
-              MONGO_INITDB_DATABASE=${{ secrets.MONGO_INITDB_DATABASE }}
-              MONGO_TEST_DATABASE=${{ secrets.MONGO_TEST_DATABASE }}
-              MONGODB_URL=${{ secrets.MONGODB_URL }}
-            ' | tr '\n' '\0' | xargs -0 -I {} echo 'export {}')
-
-            docker compose down
-            docker compose pull
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-          "
+          docker compose down
+          docker compose pull
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
