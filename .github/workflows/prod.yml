@@ -93,7 +93,7 @@ jobs:
       - name: Download binary artifact
         uses: actions/download-artifact@v3
         with:
-          name: tootodo-be-Linux-gnu-arm64.tar.gz
+          name: tootodo-be-Linux-gnu-arm64
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
