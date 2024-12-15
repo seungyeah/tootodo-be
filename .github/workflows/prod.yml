@@ -7,6 +7,7 @@ on:
 
 env:
   SQLX_OFFLINE: true
+  CARGO_BUILD_TARGET: aarch64-unknown-linux-gnu
 
 jobs:
   build:
@@ -55,7 +56,7 @@ jobs:
           target: ${{ matrix.platform.target }}
 
       - name: Install SQLx CLI
-        run: cargo install sqlx-cli --no-default-features --features runtime-tokio-rustls,chrono,uuid,postgres
+        run: cargo install sqlx-cli --no-default-features --features runtime-tokio-rustls,postgres
 
       - name: Run SQLx Database Migrations
         run: sqlx migrate run
