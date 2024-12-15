@@ -55,7 +55,7 @@ jobs:
           target: ${{ matrix.platform.target }}
 
       - name: Install SQLx CLI
-        run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
+        run: cargo install sqlx-cli --no-default-features --features runtime-tokio-rustls,chrono,uuid,postgres
 
       - name: Run SQLx Database Migrations
         run: sqlx migrate run
