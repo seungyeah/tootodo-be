@@ -14,9 +14,12 @@ jobs:
     name: Build and Test - ${{ matrix.platform.os-name }}
     strategy:
       matrix:
-          target: [aarch64-unknown-linux-gnu]
+        platform:
+          - os-name: Linux-arm64-raspberrypi
+            runs-on: ubuntu-20.04
+            target: aarch64-unknown-linux-gnu
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform.runs-on }}
     services:
       postgres:
         image: postgres:15.6-alpine3.19
@@ -54,9 +57,6 @@ jobs:
           profile: minimal
           toolchain: stable
           target: ${{ matrix.platform.target }}
-
-      - name: Add aarch64 target
-        run: rustup target add aarch64-unknown-linux-gnu
 
       - name: Install SQLx CLI
         run: cargo install sqlx-cli --no-default-features --features postgres
