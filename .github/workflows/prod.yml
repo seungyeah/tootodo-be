@@ -98,9 +98,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Copy Binary for Docker Build
-        run: mkdir -p ./artifact && mv ./tootodo-be ./artifact/
-
       - name: Build Docker Image
         run: |
           docker buildx build \
