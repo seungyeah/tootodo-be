@@ -7,7 +7,6 @@ on:
 
 env:
   SQLX_OFFLINE: true
-  CARGO_BUILD_TARGET: aarch64-unknown-linux-gnu
 
 jobs:
   build:
@@ -34,7 +33,6 @@ jobs:
           --health-interval 10s 
           --health-timeout 5s 
           --health-retries 5
-
     env:
       DATABASE_URL: ${{ secrets.DATABASE_TEST_URI }}
 
@@ -71,7 +69,6 @@ jobs:
         run: |
           cargo build --verbose
           cargo test --verbose
-
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v0
         with:
@@ -84,8 +81,7 @@ jobs:
         with:
           executable-name: tootodo-be
           target: ${{ matrix.platform.target }}
-          args: "--locked --release"
-          strip: true
+
 
   docker-build:
     needs: build
