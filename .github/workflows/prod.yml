@@ -69,27 +69,28 @@ jobs:
         run: |
           cargo build --verbose
           cargo test --verbose
-          
-      - run: mkdir -p ./artifact
       
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v0
         with:
           target: ${{ matrix.platform.target }}
           args: "--locked --release"
-          output: ./artifact/tootodo-be-${{ matrix.platform.target }}
+
+      - run: mkdir -p ./artifact
         
-      - name: Verify artifact directory
+      - name: Publish artifacts
+        uses: houseabsolute/actions-rust-release@v0
+        with:
+          executable-name: tootodo-be
+          target: ${{ matrix.platform.target }}
+          retention-days: 1
+          working-directory: ./artifact
+
+      - name: Verify artifact
         run: |
           cd ./artifact
           ls -la
 
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4.4.3
-        with:
-          name: tootodo-be-${{ matrix.platform.target }}
-          retention-days: 1
-          path: ./artifact/tootodo-be-${{ matrix.platform.target }}
               
 
   docker-build:
