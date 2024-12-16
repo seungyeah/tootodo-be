@@ -136,7 +136,7 @@ jobs:
           docker buildx build \
           --platform linux/arm64 \
           -t seungyeah/api-tootodo \
-          --build-arg APP_BINARY=./artifacts/tootodo-be-Linux-gnu-arm64/tootodo-be \
+          --build-arg APP_BINARY=./artifacts/tootodo-be \
           .
 
       - name: Run Docker Containers
