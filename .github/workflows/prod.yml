@@ -76,13 +76,15 @@ jobs:
           target: ${{ matrix.platform.target }}
           args: "--locked --release"
           strip: true
+
+      - run: mkdir -p ./artifact
           
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.4.3
         with:
           name: tootodo-be
           retention-days: 1
-          target: ${{ matrix.platform.target }}
+          path: ./artifact/tootodo-be-${{ matrix.platform.target }}
       
 
   docker-build:
