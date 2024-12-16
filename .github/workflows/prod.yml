@@ -135,7 +135,7 @@ jobs:
         run: |
           docker buildx build \
           --platform linux/arm64 \
-          -t tootodo-be:latest \
+          -t seungyeah/api-tootodo:latest \
           --build-arg APP_BINARY=./artifacts/tootodo-be-Linux-gnu-arm64/tootodo-be \
           .
 
