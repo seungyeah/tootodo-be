@@ -75,8 +75,6 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
           args: "--locked --release"
-
-      - run: mkdir -p ./artifact
         
       - name: Publish artifacts
         uses: houseabsolute/actions-rust-release@v0
@@ -84,12 +82,22 @@ jobs:
           executable-name: tootodo-be
           target: ${{ matrix.platform.target }}
           retention-days: 1
-          working-directory: ./artifact
-
-      - name: Verify artifact
+          
+      - name: Debug - List working directory
         run: |
-          cd ./artifact
+          pwd
           ls -la
+      
+      - name: Debug - Find executable
+        run: |
+          find . -name "tootodo-be*"
+      
+      - name: Debug - Check specific directories
+        run: |
+          echo "Checking target directory:"
+          ls -la target/
+          echo "Checking target release directory:"
+          ls -la target/${{ matrix.platform.target }}/release/
 
               
 
