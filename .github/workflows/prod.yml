@@ -101,7 +101,7 @@ jobs:
 
               
 
-  docker-build:
+  docker-build-run:
     needs: build
     runs-on: [self-hosted, linux, arm64, rpi]
     steps:
@@ -139,14 +139,7 @@ jobs:
           --build-arg APP_BINARY=./artifacts/tootodo-be-Linux-gnu-arm64/tootodo-be \
           .
 
-  deploy:
-    needs: docker-build
-    runs-on: [self-hosted, linux, arm64, rpi]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Deploy Docker Containers
+      - name: Run Docker Containers
         run: |
           docker compose down
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
