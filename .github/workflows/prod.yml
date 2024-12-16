@@ -77,19 +77,20 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
           args: "--locked --release"
-          working-directory: ./artifact
-          strip: true
+          output: ./artifact/tootodo-be-${{ matrix.platform.target }}
+        
+      - name: Verify artifact directory
+        run: |
+          cd ./artifact
+          ls -la
 
-
-      - run: cd ./artifact && ls -a
-      
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.4.3
         with:
-          name: tootodo-be
+          name: tootodo-be-${{ matrix.platform.target }}
           retention-days: 1
           path: ./artifact/tootodo-be-${{ matrix.platform.target }}
-      
+              
 
   docker-build:
     needs: build
