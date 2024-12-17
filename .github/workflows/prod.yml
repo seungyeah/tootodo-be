@@ -142,4 +142,5 @@ jobs:
       - name: Run Docker Containers
         run: |
           docker compose down
+          docker compose exec tootodo-be env
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
