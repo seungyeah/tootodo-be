@@ -1,5 +1,5 @@
 # Base Image
-FROM --platform=linux/arm64 debian:bookworm-slim AS runner
+FROM --platform=linux/arm64 arm64v8/debian:bookworm-slim AS runner
 
 
 # 인자 추가
